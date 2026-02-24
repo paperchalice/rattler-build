@@ -2,6 +2,10 @@ use std::path::PathBuf;
 use std::process::Command;
 
 use rattler_conda_types::Platform;
+use rattler_shell::{
+    activation::{ActivationVariables, Activator, PathModificationBehavior},
+    shell,
+};
 
 use crate::execution::ExecutionArgs;
 
@@ -18,6 +22,18 @@ foreach ($envVar in Get-ChildItem Env:) {
         Set-Variable -Name $envVar.Name -Value $envVar.Value
     }
 }
+
+"#;
+
+const POWERSHELL_POSTAMBLE: &str = r#"
+if (Get-Command 'upx' -ErrorAction SilentlyContinue) {
+    $files = Get-ChildItem -Path $LIBRARY_PREFIX -Recurse -Include *.exe, *.dll -Attributes !ReparsePoint
+    if ($files) {
+        upx -9 $files
+    }
+}
+
+tree $PREFIX /F
 
 "#;
 
@@ -60,8 +76,38 @@ impl Interpreter for PowerShellInterpreter {
             );
         }
 
+        let mut shell_script =
+            shell::ShellScript::new(shell::PowerShell::default(), Platform::current());
+        let host_prefix_activator = Activator::from_path(
+            &args.run_prefix,
+            shell::PowerShell::default(),
+            args.execution_platform,
+        )
+        .unwrap();
+        let vars = ActivationVariables {
+            path_modification_behavior: PathModificationBehavior::Append,
+            ..Default::default()
+        };
+        let host_activation = host_prefix_activator.activation(vars.clone()).unwrap();
+        if let Some(build_prefix) = &args.build_prefix {
+            let build_prefix_activator = Activator::from_path(
+                build_prefix,
+                shell::PowerShell::default(),
+                args.execution_platform,
+            )
+            .unwrap();
+
+            let build_activation = build_prefix_activator.activation(vars.clone()).unwrap();
+            shell_script.append_script(&host_activation.script);
+            shell_script.append_script(&build_activation.script);
+        } else {
+            shell_script.append_script(&host_activation.script);
+        }
         let ps1_script = args.work_dir.join("conda_build_script.ps1");
-        let contents = POWERSHELL_PREAMBLE.to_owned() + args.script.script();
+        let contents = shell_script.contents().unwrap()
+            + POWERSHELL_PREAMBLE
+            + args.script.script()
+            + POWERSHELL_POSTAMBLE;
         tokio::fs::write(&ps1_script, contents).await?;
 
         let args = ExecutionArgs {
