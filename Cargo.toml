@@ -338,17 +338,19 @@ name = "parse_file"
 harness = false
 
 [patch.crates-io]
-# rattler = { git = "https://github.com/conda/rattler", branch = "main" }
-# rattler_sandbox = { git = "https://github.com/conda/rattler", branch = "main" }
-# rattler_cache = { git = "https://github.com/conda/rattler", branch = "main" }
-# rattler_conda_types = { git = "https://github.com/conda/rattler", branch = "main" }
-# rattler_digest = { git = "https://github.com/conda/rattler", branch = "main" }
-# rattler_index = { git = "https://github.com/conda/rattler", branch = "main" }
-# rattler_networking = { git = "https://github.com/conda/rattler", branch = "main" }
-# rattler_repodata_gateway = { git = "https://github.com/conda/rattler", branch = "main" }
-# rattler_shell = { git = "https://github.com/conda/rattler", branch = "main" }
-# rattler_solve = { git = "https://github.com/conda/rattler", branch = "main" }
-# rattler_redaction = { git = "https://github.com/conda/rattler", branch = "main" }
-# rattler_virtual_packages = { git = "https://github.com/conda/rattler", branch = "main" }
-# rattler_package_streaming = { git = "https://github.com/conda/rattler", branch = "main" }
-# rattler_menuinst = { git = "https://github.com/conda/rattler", branch = "main" }
+rattler = { git = "https://github.com/paperchalice/rattler", branch = "me" }
+rattler_config = { git = "https://github.com/paperchalice/rattler", branch = "me" }
+rattler_s3 = { git = "https://github.com/paperchalice/rattler", branch = "me" }
+# rattler_sandbox = { git = "https://github.com/paperchalice/rattler", branch = "me" }
+rattler_cache = { git = "https://github.com/paperchalice/rattler", branch = "me" }
+rattler_conda_types = { git = "https://github.com/paperchalice/rattler", branch = "me" }
+rattler_digest = { git = "https://github.com/paperchalice/rattler", branch = "me" }
+rattler_index = { git = "https://github.com/paperchalice/rattler", branch = "me" }
+rattler_networking = { git = "https://github.com/paperchalice/rattler", branch = "me" }
+rattler_repodata_gateway = { git = "https://github.com/paperchalice/rattler", branch = "me" }
+rattler_shell = { git = "https://github.com/paperchalice/rattler", branch = "me" }
+rattler_solve = { git = "https://github.com/paperchalice/rattler", branch = "me" }
+rattler_redaction = { git = "https://github.com/paperchalice/rattler", branch = "me" }
+rattler_virtual_packages = { git = "https://github.com/paperchalice/rattler", branch = "me" }
+rattler_package_streaming = { git = "https://github.com/paperchalice/rattler", branch = "me" }
+rattler_menuinst = { git = "https://github.com/paperchalice/rattler", branch = "me" }
