@@ -28,6 +28,7 @@ foreach ($envVar in Get-ChildItem Env:) {
 const POWERSHELL_POSTAMBLE: &str = r#"
 & {
     $PSNativeCommandUseErrorActionPreference = $false
+    $ErrorActionPreference = 'Continue'
     if (Get-Command 'upx' -ErrorAction SilentlyContinue) {
     $files = Get-ChildItem -Path $LIBRARY_PREFIX -Recurse -Include *.exe, *.dll -Attributes !ReparsePoint
         if ($files) {
