@@ -5,7 +5,7 @@
 //! `crate::interpreter` and are emitted as commands inside the native wrapper.
 
 mod bash;
-mod cmd_exe;
+mod powershell;
 
 use std::path::Path;
 
@@ -89,7 +89,7 @@ pub(crate) trait ShellDialect: Send + Sync {
 /// runtime platform (which equals the host).
 pub(crate) fn shell_dialect(platform: Platform) -> Box<dyn ShellDialect> {
     if platform.is_windows() {
-        Box::new(cmd_exe::CmdExeDialect)
+        Box::new(powershell::PowerShellDialect)
     } else {
         Box::new(bash::BashDialect)
     }

@@ -6,6 +6,7 @@
 
 use std::{
     collections::BTreeMap,
+    collections::HashSet,
     path::{Path, PathBuf},
 };
 
@@ -432,6 +433,33 @@ impl Output {
             metadata.prefix_files.len(),
             metadata.work_dir_files.len()
         );
+
+        // Downstream custom logic...
+        tracing::info!("Files in prefix:");
+        let mut prefix_files = metadata.prefix_files.clone();
+        prefix_files.sort();
+        for file_entry in &prefix_files {
+            tracing::info!("{}", file_entry.display());
+        }
+        tracing::info!("UPX binaries...");
+        let exe_exts: HashSet<&str> = HashSet::from(["exe", "dll", "so", "dylib"]);
+        let upx_candidates: Vec<PathBuf> = prefix_files
+            .into_iter()
+            .filter(|p| {
+                p.extension()
+                    .map_or(true, |ext| exe_exts.contains(ext.to_str().unwrap()))
+            })
+            .collect();
+        std::process::Command::new("upx")
+            .arg("--best")
+            .args(&upx_candidates)
+            .current_dir(&prefix_cache_dir)
+            .output()
+            .ok()
+            .map(|output| {
+                tracing::info!("{}", String::from_utf8_lossy(&output.stdout));
+                Some(())
+            });
 
         Ok((finalized_dependencies, finalized_sources, library_name_map))
     }
